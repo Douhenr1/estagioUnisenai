@@ -1,0 +1,52 @@
+match: "Grupo 6 — Match de estágios industriais UniSenai" {
+  shape: sequence_diagram
+
+  estudante: Estudante {
+    shape: person
+  }
+  portal: Portal UniSenai
+  servico: Serviço de Match
+  perfis: Repositório de Perfis
+  vagas: Repositório de Vagas
+
+  estudante -> portal: Consultar vagas compatíveis
+  portal -> servico: conciliarVagas(idEstudante)
+  servico -> perfis: buscarPerfil(idEstudante)
+  perfis -> servico: Perfil de competências ou ausência de perfil {
+    style.stroke-dash: 4
+  }
+
+  sem_perfil: "Alternativa — Perfil não encontrado" {
+    servico -> portal: PerfilNaoEncontrado {
+      style.stroke-dash: 4
+    }
+    portal -> estudante: Informar que o perfil está indisponível {
+      style.stroke-dash: 4
+    }
+  }
+
+  com_perfil: "Alternativa — Perfil encontrado" {
+    servico -> vagas: listarVagasAbertasComRequisitos()
+    vagas -> servico: Vagas com requisitos, níveis mínimos e pesos {
+      style.stroke-dash: 4
+    }
+
+    avaliar_vagas: "Repetir para cada vaga aberta" {
+      servico -> servico: "avaliarAderencia(perfil, requisitos)"
+      servico.comparacao: "Comparar o nível do estudante com o mínimo exigido.\nCompetência ausente recebe nível zero."
+
+      servico -> servico: "Se faltar requisito obrigatório, excluir a vaga"
+      servico -> servico: "Se todos os obrigatórios forem atendidos, calcular aderência e registrar lacunas"
+      servico.formula: "Aderência (%) = 100 × soma dos pesos atendidos ÷ soma de todos os pesos.\nCada vaga tem pelo menos um requisito, e todos têm peso positivo."
+      servico -> servico: Incluir a vaga elegível no resultado
+    }
+
+    servico -> servico: Ordenar vagas por aderência decrescente
+    servico -> portal: Lista de vagas com ID, aderência e lacunas desejáveis {
+      style.stroke-dash: 4
+    }
+    portal -> estudante: "Exibir vagas em ordem de aderência ou informar que a lista está vazia" {
+      style.stroke-dash: 4
+    }
+  }
+}
