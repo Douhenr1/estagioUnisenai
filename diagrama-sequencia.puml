@@ -1,0 +1,38 @@
+
+@startuml
+title Gestão de Aprendizagem e Estágios UniSenai
+autonumber
+
+actor Estudante
+participant "Sistema" as Sistema
+participant "Serviço de Perfil" as Perfil
+participant "Serviço de Vagas" as Vagas
+participant "Serviço de Compatibilidade" as Compatibilidade
+database "Banco de Dados" as Banco
+
+Estudante -> Sistema: Solicita oportunidades de estágio
+
+Sistema -> Perfil: Consultar perfil do estudante
+Perfil -> Banco: Buscar competências cadastradas
+Banco --> Perfil: Retornar competências
+Perfil --> Sistema: Enviar perfil do estudante
+
+Sistema -> Vagas: Consultar vagas disponíveis
+Vagas -> Banco: Buscar vagas e requisitos
+Banco --> Vagas: Retornar vagas cadastradas
+Vagas --> Sistema: Enviar lista de vagas
+
+Sistema -> Compatibilidade: Comparar perfil com vagas
+
+loop Para cada vaga disponível
+    Compatibilidade -> Compatibilidade: Comparar competências
+    Compatibilidade -> Compatibilidade: Calcular pontuação
+end
+
+Compatibilidade -> Compatibilidade: Classificar vagas
+Compatibilidade --> Sistema: Retornar classificação das vagas
+
+Sistema --> Estudante: Apresentar oportunidades compatíveis
+
+@enduml
+

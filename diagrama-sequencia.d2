@@ -1,0 +1,36 @@
+
+# Diagrama de Sequência — Estágios UniSenai
+
+shape: sequence_diagram
+
+Estudante: Estudante
+Sistema: Sistema
+Perfil: Serviço de Perfil
+Vagas: Serviço de Vagas
+Compatibilidade: Serviço de Compatibilidade
+Banco: Banco de Dados
+
+Estudante -> Sistema: Solicita oportunidades de estágio
+
+Sistema -> Perfil: Consultar perfil do estudante
+Perfil -> Banco: Buscar competências cadastradas
+Banco -> Perfil: Retornar competências
+Perfil -> Sistema: Enviar perfil do estudante
+
+Sistema -> Vagas: Consultar vagas disponíveis
+Vagas -> Banco: Buscar vagas e requisitos
+Banco -> Vagas: Retornar vagas cadastradas
+Vagas -> Sistema: Enviar lista de vagas
+
+Sistema -> Compatibilidade: Comparar perfil com vagas
+
+Para cada vaga disponível: {
+  Compatibilidade -> Compatibilidade: Comparar competências
+  Compatibilidade -> Compatibilidade: Verificar requisitos
+  Compatibilidade -> Compatibilidade: Calcular pontuação
+}
+
+Compatibilidade -> Compatibilidade: Classificar vagas
+Compatibilidade -> Sistema: Retornar classificação das vagas
+
+Sistema -> Estudante: Apresentar oportunidades compatíveis
